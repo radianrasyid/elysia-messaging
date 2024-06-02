@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Push Notification Using Web-Push</title>
+  </head>
+  <body>
+    <h1>Push Notification Using Web-Push</h1>
+
+    <script>
+      const publicVapidKey =
+        "BOWFwnnu5HC497_tNEGHj-xiEJwYHkPuBP6ci-Ktvj0Uzb-Z2Pzss-gs75pBdEhmqkzf4Jj9isTJSN5H3dZuv4c";
+      console.log("ini test dari client.js");
+      async function registerServiceWorker() {
+        console.log("masuk ke async function");
+        const register = await navigator.serviceWorker.register("/worker.js", {
+          scope: "/",
+        });
+
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: publicVapidKey,
+        });
+
+        await fetch("/subscribe", {
+          method: "POST",
+          body: JSON.stringify(subscription),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      registerServiceWorker();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,130 @@
+model Message {
+  id         Int                @id @default(autoincrement())
+  senderId   String
+  text       String
+  sentAt     DateTime           @default(now())
+  readAt     DateTime?
+  chatId     String
+  chat       Chat               @relation(fields: [chatId], references: [id])
+  sender     User               @relation("SentMessages", fields: [senderId], references: [id])
+  recipients MessageRecipient[]
+}
+
+model MessageRecipient {
+  messageId Int
+  userId    String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User    @relation(name: "MessageRecipients", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([messageId, userId])
+}
+
+model User {
+  id               String             @id @default(uuid())
+  email            String             @unique
+  hashedPassword   String
+  name             String?
+  role             ROLE               @default(CUSTOMER)
+  avatar           String?
+  username         String             @unique
+  token            String?
+  contact          Contact?
+  contacts         Contact[]          @relation("User")
+  group            Group[]
+  groupMember      GroupMember[]
+  receivedMessages MessageRecipient[] @relation(name: "MessageRecipients")
+  sentMessages     Message[]          @relation("SentMessages")
+  Session          Session[]
+  UserEvent        UserEvent[]
+  chats            ChatsOnUsers[]
+}
+
+model Chat {
+  id       String         @id @default(uuid())
+  messages Message[]
+  users    ChatsOnUsers[]
+}
+
+model ChatsOnUsers {
+  chatId String
+  userId String
+  chat   Chat   @relation(fields: [chatId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([chatId, userId])
+}
+
+model Contact {
+  id        Int    @id @default(autoincrement())
+  userId    String
+  contactId String @unique
+  contact   User   @relation(fields: [contactId], references: [id])
+  user      User   @relation("User", fields: [userId], references: [id])
+
+  @@unique([userId, contactId], name: "unique_user_contact_pair")
+}
+
+model Group {
+  id        Int           @id @default(autoincrement())
+  createdBy String
+  createdAt DateTime      @default(now())
+  creator   User          @relation(fields: [createdBy], references: [id])
+  members   GroupMember[]
+}
+
+model GroupMember {
+  userId  String
+  groupId Int
+  group   Group  @relation(fields: [groupId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, groupId])
+}
+
+model UserEvent {
+  id             String  @id
+  userId         String
+  eventId        String
+  attendance     Boolean @default(false)
+  certificateUrl String?
+  Event          Event   @relation(fields: [eventId], references: [id])
+  User           User    @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id              String      @id @default(uuid())
+  name            String
+  description     String?
+  capacity        Int
+  time            DateTime
+  deadline        DateTime
+  price           Float
+  location        String
+  speaker         String
+  moderator       String
+  benefit         String?
+  category        String
+  certificateLink String?
+  UserEvent       UserEvent[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ROLE {
+  ADMIN
+  CUSTOMER
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}

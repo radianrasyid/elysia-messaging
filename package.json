@@ -5,10 +5,31 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
   },
+  "prisma": {
+    "schema": "./src/prisma/schema.prisma"
+  },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/cookie": "^0.8.0",
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/html": "^1.0.2",
+    "@elysiajs/jwt": "^1.0.2",
+    "@elysiajs/static": "^1.0.3",
+    "@prisma/client": "5.14.0",
+    "argon2": "^0.40.3",
+    "elysia": "latest",
+    "path": "^0.12.7",
+    "prisma": "^5.14.0",
+    "serve-static": "^1.15.0",
+    "uuid": "^9.0.1",
+    "web-push": "^3.6.7",
+    "ws": "^8.17.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/serve-static": "^1.15.7",
+    "@types/uuid": "^9.0.8",
+    "@types/web-push": "^3.6.3",
+    "@types/ws": "^8.5.10",
     "bun-types": "latest"
   },
   "module": "src/index.js"
