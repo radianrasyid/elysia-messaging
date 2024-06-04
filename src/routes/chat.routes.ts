@@ -80,12 +80,6 @@ const chat = new Elysia({
           ws.close();
           return;
         } else {
-          if (recipientData == null) {
-            ws.send({
-              ok: false,
-              message: "recipient does not registered",
-            });
-          }
           const amIInChat = await readChatByUserIds(myId);
           if (amIInChat !== null) {
             ws.subscribe(amIInChat.id);
